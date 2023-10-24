@@ -38,7 +38,7 @@ public class StatMapper {
     private long mapIpToLong(String ip) {
         long result = 0L;
         String[] numbers = ip.split("\\.");
-        if(numbers.length != 4) {
+        if (numbers.length != 4) {
             throw new NotIpAddressException("Ip expected to be of pattern k.l.m.n, where k, l, m, n - integers " +
                     "from 0 to 255. But received: " + ip);
         }
