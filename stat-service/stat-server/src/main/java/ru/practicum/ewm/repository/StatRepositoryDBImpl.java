@@ -1,6 +1,7 @@
 package ru.practicum.ewm.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,11 +18,12 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class StatRepositoryDBImpl implements StatRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public long saveHit(EndpointHit hit) {
+    public ViewStatsDto saveHit(EndpointHit hit) {
         int appId = getAppId(hit.getApp());
 
         String insertSql = "insert into endpoints_hits (app_id, uri, ip_address, visited) values (?,?,?,?)";
@@ -37,7 +39,18 @@ public class StatRepositoryDBImpl implements StatRepository {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        log.info("New hit with id={}, app={}, uri={}, ip={} and visited={} has been saved",
+                keyHolder.getKey().longValue(), hit.getApp(), hit.getUri(), hit.getIp(), hit.getTimestamp());
+
+        String selectSql = "select count(ip_address) as hits " +
+                "from endpoints_hits " +
+                "where app_id = ? " +
+                "and uri = ?";
+
+        return jdbcTemplate.query(selectSql,
+                (resultSet, rowNumber) -> new ViewStatsDto(hit.getApp(), hit.getUri(), resultSet.getLong("hits")),
+                appId, hit.getUri())
+                .stream().findAny().get();
     }
 
     @Override
@@ -75,7 +88,7 @@ public class StatRepositoryDBImpl implements StatRepository {
                 }
             }
             return ps;
-        }, (resultSet, rowNumber) -> new ViewStatsDto(app, resultSet.getString("uri"), resultSet.getInt("hits")));
+        }, (resultSet, rowNumber) -> new ViewStatsDto(app, resultSet.getString("uri"), resultSet.getLong("hits")));
     }
 
     private int getAppId(String app) {
