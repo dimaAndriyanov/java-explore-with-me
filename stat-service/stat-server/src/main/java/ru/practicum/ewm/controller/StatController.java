@@ -2,6 +2,7 @@ package ru.practicum.ewm.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.EndpointHitDto;
 import ru.practicum.ewm.ViewStatsDto;
@@ -21,10 +22,11 @@ public class StatController {
     private static final String HEADER_USER_APP = "X-Stat-Server-User-App";
 
     @PostMapping("/hit")
-    public void postHit(@Valid @RequestBody EndpointHitDto hit) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ViewStatsDto postHit(@Valid @RequestBody EndpointHitDto hit) {
         log.info("Request on posting endpoint hit with\napp = {}\nuri = {}\nip = {}\ntimestamp = {}\nhas been received",
                 hit.getApp(), hit.getUri(), hit.getIp(), hit.getTimestamp());
-        service.createHit(mapToEndpointHit(hit));
+        return service.createHit(mapToEndpointHit(hit));
     }
 
     @GetMapping("/stats")

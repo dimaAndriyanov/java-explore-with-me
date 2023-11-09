@@ -10,5 +10,5 @@ import lombok.RequiredArgsConstructor;
 public class ViewStatsDto {
     private final String app;
     private final String uri;
-    private final int hits;
+    private final long hits;
 }

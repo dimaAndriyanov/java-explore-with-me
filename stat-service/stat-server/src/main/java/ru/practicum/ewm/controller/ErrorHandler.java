@@ -58,4 +58,11 @@ public class ErrorHandler {
         log.warn("Requested object not found.\n{}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleServerError(Throwable exception) {
+        log.warn("Internal server error has occurred.\n{}", exception.getMessage());
+        return new ErrorResponse(exception.getMessage());
+    }
 }

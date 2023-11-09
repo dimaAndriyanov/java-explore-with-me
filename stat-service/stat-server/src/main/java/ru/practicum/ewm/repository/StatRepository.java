@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatRepository {
-    long saveHit(EndpointHit hit);
+    ViewStatsDto saveHit(EndpointHit hit);
 
     List<ViewStatsDto> getStats(List<LocalDateTime> period, List<String> uris, boolean unique, String app);
 }
