@@ -82,9 +82,9 @@ public class PrivateEventController {
 
     @GetMapping("/{eventId}/requests")
     public List<EventParticipationRequestDto> getRequestsForUsersEvent(@PathVariable Long userId, @PathVariable Long eventId) {
-        userService.getUserById(userId);
         log.info("Request on getting event participation requests for own event with id={} from user with id={} " +
                 "has been received", eventId, userId);
+        userService.getUserById(userId);
         return toEventParticipationRequestDtos(eventService.getRequestsForUsersEvent(userId, eventId));
     }
 

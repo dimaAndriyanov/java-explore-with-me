@@ -54,7 +54,8 @@ public class ErrorHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             MissingServletRequestParameterException.class,
-            NotValidRequestParametersException.class
+            NotValidRequestParametersException.class,
+            NotUniqueObjectsIdsInListException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleBadRequestError(Throwable exception) {
@@ -70,7 +71,8 @@ public class ErrorHandler {
             EmailIsAlreadyInUseException.class,
             ObjectAlreadyExistsException.class,
             CanNotCreateEventParticipationException.class,
-            CanNotUpdatePublishedEventException.class
+            CanNotUpdatePublishedEventException.class,
+            CanNotCreateIssueToEvent.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleSavingConflictingObjectError(RuntimeException exception) {
@@ -84,7 +86,9 @@ public class ErrorHandler {
 
     @ExceptionHandler({
             CanNotDeleteObjectException.class,
-            CanNotUpdateObjectException.class})
+            CanNotUpdateObjectException.class,
+            CanNotUpdatePendingEventsStatusesException.class,
+            CanNotUpdateIssueException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleForbiddenOperationError(RuntimeException exception) {
         log.warn("Request on forbidden operation has been received.\n{}", exception.getMessage());

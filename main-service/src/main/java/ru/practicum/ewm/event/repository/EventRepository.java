@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.State;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,4 +62,11 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     List<Event> findAllByIdEager(Iterable<Long> ids);
 
     List<Event> findAllByInitiatorIdAndState(Long id, State state);
+
+    @Query("select e " +
+            "from Event e " +
+            "join fetch e.initiator " +
+            "join fetch e.category " +
+            "where e.state = ?1 and e.eventDate < ?2")
+    List<Event> findAllByStateAndEventDateBefore(State state, LocalDateTime time);
 }

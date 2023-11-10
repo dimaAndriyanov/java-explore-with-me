@@ -17,10 +17,7 @@ import ru.practicum.ewm.event.participation.request.model.EventParticipationRequ
 import ru.practicum.ewm.event.participation.request.model.Status;
 import ru.practicum.ewm.event.participation.request.repository.EventParticipationRequestRepository;
 import ru.practicum.ewm.event.repository.EventRepository;
-import ru.practicum.ewm.exception.CanNotUpdateObjectException;
-import ru.practicum.ewm.exception.CanNotUpdatePublishedEventException;
-import ru.practicum.ewm.exception.CouldNotReadStatServerResponseException;
-import ru.practicum.ewm.exception.ObjectNotFoundException;
+import ru.practicum.ewm.exception.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -329,6 +326,41 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
+    @Transactional
+    public List<Event> cancelAllHappenedPendingEvents(LocalDateTime time) {
+        List<Event> happenedPendingEventsToCancel = eventRepository.findAllByStateAndEventDateBefore(State.PENDING, time);
+        happenedPendingEventsToCancel.forEach(event -> event.setState(State.CANCELED));
+        eventRepository.saveAll(happenedPendingEventsToCancel);
+        return happenedPendingEventsToCancel;
+    }
+
+    @Override
+    @Transactional
+    public List<Event> updatePendingEventsStatuses(Map<Long, State> eventIdsToStates) {
+        List<Event> events = eventRepository.findAllByIdEager(eventIdsToStates.keySet());
+        if (events.size() != eventIdsToStates.size()) {
+            throw new ObjectNotFoundException("Some of events with ids from " + eventIdsToStates.keySet() +
+                    " was not found");
+        }
+        if (events
+                .stream()
+                .anyMatch(event -> !event.getState().equals(State.PENDING))) {
+            throw new CanNotUpdatePendingEventsStatusesException("Some of events with ids from " + eventIdsToStates.keySet() +
+                    " has status different from PENDING");
+        }
+        LocalDateTime nowPlusHour = LocalDateTime.now().plusHours(1);
+        if (events
+                .stream()
+                .anyMatch(event -> event.getEventDate().isBefore(nowPlusHour))) {
+            throw new CanNotUpdatePendingEventsStatusesException("Some of events with ids from " + eventIdsToStates.keySet() +
+                    " are going to start earlier than one hour from now");
+        }
+        events.forEach(event -> event.setState(eventIdsToStates.get(event.getId())));
+        eventRepository.saveAll(events);
+        return events;
+    }
+
     private List<Event> mapViewsToEvents(List<Event> events) {
         try {
             Map<Long, Long> stats = statClient.getStats(
@@ -402,23 +434,18 @@ public class EventServiceImpl implements EventService {
     private BooleanExpression getFilters(GetEventsRequestParameters parameters) {
         List<BooleanExpression> filters = new ArrayList<>();
         if (parameters.getUsers() != null && !parameters.getUsers().isEmpty()) {
-            System.out.println(1);
             filters.add(QEvent.event.initiator.id.in(parameters.getUsers()));
         }
         if (parameters.getStates() != null && !parameters.getStates().isEmpty()) {
-            System.out.println(2);
             filters.add(QEvent.event.state.in(parameters.getStates()));
         }
         if (parameters.getCategories() != null && !parameters.getCategories().isEmpty()) {
-            System.out.println(3);
             filters.add(QEvent.event.category.id.in(parameters.getCategories()));
         }
         if (parameters.getRangeStart() != null) {
-            System.out.println(4);
             filters.add(QEvent.event.eventDate.after(parameters.getRangeStart()));
         }
         if (parameters.getRangeEnd() != null) {
-            System.out.println(5);
             filters.add(QEvent.event.eventDate.before(parameters.getRangeEnd()));
         }
         if (parameters.getText() != null && !parameters.getText().isBlank()) {
@@ -430,11 +457,9 @@ public class EventServiceImpl implements EventService {
                     ));
         }
         if (parameters.getPaid() != null) {
-            System.out.println(7);
             filters.add(QEvent.event.paid.eq(parameters.getPaid()));
         }
-        if (parameters.getOnlyAvailable()) {
-            System.out.println(8);
+        if (parameters.getOnlyAvailable() != null && parameters.getOnlyAvailable()) {
             filters.add(
                     QEvent.event.participantLimit.eq(0).or(
                             QEvent.event.participantLimit.subtract(QEvent.event.confirmedRequests).gt(0)

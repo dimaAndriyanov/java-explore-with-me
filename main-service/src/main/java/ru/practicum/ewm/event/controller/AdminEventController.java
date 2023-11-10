@@ -9,6 +9,7 @@ import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.service.CategoryService;
 import ru.practicum.ewm.event.dto.EventDto;
 import ru.practicum.ewm.event.dto.EventRequestDto;
+import ru.practicum.ewm.event.dto.ModerationReplyDto;
 import ru.practicum.ewm.event.model.GetEventsRequestParameters;
 import ru.practicum.ewm.event.model.State;
 import ru.practicum.ewm.event.service.EventService;
@@ -16,6 +17,7 @@ import ru.practicum.ewm.exception.NotValidRequestParametersException;
 import ru.practicum.ewm.valid.OnUpdateByAdmin;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -63,5 +65,29 @@ public class AdminEventController {
         return toEventDto(eventService.updateEventByAdmin(
                 toEvent(eventRequestDto, null, category, false), eventId, eventRequestDto.getStateAction()
         ));
+    }
+
+    @GetMapping("/pending")
+    public List<EventDto> getPendingEvents(@Min (3900) @RequestParam(defaultValue = "7200") Long remainingTime,
+                                           @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                           @Positive @RequestParam(defaultValue = "10") int size) {
+        log.info("Request on getting pending events with parameters remainingTime={}, from={} and size={} has been received",
+                remainingTime, from, size);
+        return toEventDtos(eventService.getEvents(new GetEventsRequestParameters(
+                null, List.of(State.PENDING), null, LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusSeconds(remainingTime), from, size, null, null, null, null
+        )));
+    }
+
+    @PatchMapping("/pending/happened/cancel")
+    public List<EventDto> cancelAllHappenedPendingEvents() {
+        log.info("Request on canceling all happened pending events has been received");
+        return toEventDtos(eventService.cancelAllHappenedPendingEvents(LocalDateTime.now().plusHours(1)));
+    }
+
+    @PatchMapping("/pending/reply")
+    public List<EventDto> updatePendingEventsStatuses(@Valid @RequestBody List<ModerationReplyDto> replies) {
+        log.info("Request on changing statuses of pending events\nwith body ={}\nhas been received", replies);
+        return toEventDtos(eventService.updatePendingEventsStatuses(toEventToStateMap(replies)));
     }
 }
