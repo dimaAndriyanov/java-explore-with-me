@@ -1,0 +1,418 @@
+{
+	"info": {
+		"_postman_id": "5612eafa-fbed-4b21-be4b-885e11097a38",
+		"name": "Test Explore With Me - Moderation Enhancement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28560184"
+	},
+	"item": [
+		{
+			"name": "Get pending events Requests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/admin/events/pending?remainingTime=7200&from=0&size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"pending"
+					],
+					"query": [
+						{
+							"key": "remainingTime",
+							"value": "7200"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel happened pending events Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/admin/events/pending/happened/cancel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"pending",
+						"happened",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reply to pending events Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"eventId\" : 1,\r\n        \"action\" : \"PUBLISH_EVENT\"\r\n    },\r\n    {\r\n        \"eventId\" : 3,\r\n        \"action\" : \"REJECT_EVENT\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/admin/events/pending/reply",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"pending",
+						"reply"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post event moderation issue Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 201\", function() {\r",
+							"    pm.response.to.have.status(201);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/admin/events/issues/4?message=issueMessage",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"issues",
+						"4"
+					],
+					"query": [
+						{
+							"key": "message",
+							"value": "issueMessage"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get users event moderation issues Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/11/events/issues?onlyOpened=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"11",
+						"events",
+						"issues"
+					],
+					"query": [
+						{
+							"key": "onlyOpened",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get users event moderation issues for specified event Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/11/events/issues/4?onlyOpened=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"11",
+						"events",
+						"issues",
+						"4"
+					],
+					"query": [
+						{
+							"key": "onlyOpened",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch event moderation issue with users reply Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/11/events/issues/1?reply=issueReply",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"11",
+						"events",
+						"issues",
+						"1"
+					],
+					"query": [
+						{
+							"key": "reply",
+							"value": "issueReply"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get event moderation issues Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/admin/events/issues?onleReplied=true&from=0&size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"issues"
+					],
+					"query": [
+						{
+							"key": "onleReplied",
+							"value": "true"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Resolve replied event moderation issue Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содежрать код статуса 200\", function() {\r",
+							"    pm.response.to.be.ok;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"issueId\": 1,\r\n        \"message\": \"Agreed\",\r\n        \"issueStatus\": \"CLOSED\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/admin/events/issues",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"admin",
+						"events",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Ответ должен содержать данные в формате JSON\", function() {",
+					"    pm.response.to.be.withBody;",
+					"    pm.response.to.be.json;",
+					"})"
+				]
+			}
+		}
+	]
+}

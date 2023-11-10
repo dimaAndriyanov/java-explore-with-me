@@ -52,7 +52,7 @@ public class Event {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private final State state;
+    private State state;
 
     @Column(name = "created_on", nullable = false)
     private final LocalDateTime createdOn;

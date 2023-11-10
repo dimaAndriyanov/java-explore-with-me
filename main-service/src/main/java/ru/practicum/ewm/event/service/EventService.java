@@ -2,11 +2,14 @@ package ru.practicum.ewm.event.service;
 
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.GetEventsRequestParameters;
+import ru.practicum.ewm.event.model.State;
 import ru.practicum.ewm.event.model.StateAction;
 import ru.practicum.ewm.event.participation.request.dto.EventParticipationRequestStatusUpdateRequest;
 import ru.practicum.ewm.event.participation.request.model.EventParticipationRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface EventService {
     List<Event> getEventsByUserId(Long userId, int from, int size);
@@ -31,4 +34,8 @@ public interface EventService {
     Event getPublishedEventById(Long id);
 
     List<Event> getEventsById(Iterable<Long> ids);
+
+    List<Event> cancelAllHappenedPendingEvents(LocalDateTime time);
+
+    List<Event> updatePendingEventsStatuses(Map<Long, State> eventIdsToStates);
 }

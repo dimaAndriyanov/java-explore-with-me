@@ -20,7 +20,7 @@ create table if not exists events (
     paid boolean not null,
     participant_limit int not null,
     request_moderation boolean not null,
-    state varchar(9) not null,
+    state varchar(16) not null,
     created_on timestamp not null,
     published_on timestamp,
     initiator_id bigint not null,
@@ -55,4 +55,14 @@ create table if not exists compilations_events (
     constraint compilations_events_pk primary key (compilation_id, event_id),
     constraint compilations_events_compilations foreign key (compilation_id) references compilations (compilation_id) on delete cascade on update cascade,
     constraint compilations_events_events foreign key (event_id) references events (event_id) on delete cascade on update cascade
+);
+
+create table if not exists event_moderation_issues (
+    event_moderation_issue_id bigint generated always as identity primary key,
+    event_id bigint not null,
+    issue_message varchar(1024) not null,
+    issue_status varchar(16),
+    users_reply varchar(1024),
+
+    constraint event_moderation_issues_events foreign key (event_id) references events (event_id) on delete cascade on update cascade
 );
